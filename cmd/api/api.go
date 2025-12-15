@@ -1,10 +1,11 @@
 package api
 
-
 import (
 	"database/sql"
+	"log"
 	"net/http"
 
+	"github.com/erredev-JS/ecom/cmd/service/user"
 	"github.com/gorilla/mux"
 )
 
@@ -22,8 +23,13 @@ func NewAPIServer (addr string, db *sql.DB) *APIServer {
 
 func (s *APIServer) Run() error {
 	router := mux.NewRouter()
-	subrouter := router.PathPrefix("/api/v1")
+	subrouter := router.PathPrefix("/api/v1").Subrouter()
+    
+	userHandler := user.NewHandler()
 
+	userHandler.RegisterRoutes(subrouter)
 	
+
+	log.Println("Server is running on port", s.addr)
 	return http.ListenAndServe(s.addr, router)
 }
